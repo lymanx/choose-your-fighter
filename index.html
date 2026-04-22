@@ -4,349 +4,427 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ask Any AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg: #080808;
-    --surface: #0e0e0e;
-    --border: #1c1c1c;
-    --text: #ede8e0;
-    --muted: #555;
-    --faint: #2a2a2a;
-    --card-hover: #111;
-    --note-color: #484848;
-    --note-hover: #888;
-    --red: #d94f6e;
-    --tt: background .3s, color .3s, border-color .3s;
-  }
+:root {
+  --bg:       #0a0a0a;
+  --surface:  #121212;
+  --border:   #242424;
+  --text:     #F0EBE3;
+  --sub:      #A8A29E;
+  --dim:      #6B6560;
+  --faint:    #2C2824;
+  --hover-bg: #1C1917;
+  --red:      #E8455A;
+  --tt: background .25s, color .25s, border-color .25s;
+}
+[data-theme="light"] {
+  --bg:       #F5F1EC;
+  --surface:  #FFFFFF;
+  --border:   #E0D9D1;
+  --text:     #111111;
+  --sub:      #4A4540;
+  --dim:      #8A847E;
+  --faint:    #D4CEC8;
+  --hover-bg: #F9F6F2;
+  --red:      #D43350;
+}
 
-  [data-theme="light"] {
-    --bg: #f5f1eb;
-    --surface: #fff;
-    --border: #ddd8d0;
-    --text: #1a1614;
-    --muted: #888;
-    --faint: #ccc;
-    --card-hover: #faf8f5;
-    --note-color: #aaa;
-    --note-hover: #555;
-  }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  transition: var(--tt);
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    transition: var(--tt);
-  }
+/* ── HEADER ── */
+header {
+  padding: 2.8rem 3rem 2.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  transition: var(--tt);
+}
+.eyebrow {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: .9rem;
+}
+h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: clamp(4rem, 8vw, 7.5rem);
+  line-height: .9;
+  letter-spacing: -.01em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+h1 em { color: var(--red); font-style: normal; }
+.tagline {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--sub);
+  margin-top: 1.4rem;
+  max-width: 400px;
+}
 
-  header {
-    padding: 2.5rem 3rem 2rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 2rem;
-    flex-wrap: wrap;
-    transition: var(--tt);
-  }
+/* ── CONTROLS ── */
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1.4rem;
+  padding-top: .5rem;
+  flex-shrink: 0;
+}
+.theme-row {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  cursor: pointer;
+  user-select: none;
+}
+.theme-label {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  transition: color .2s;
+}
+.theme-row:hover .theme-label { color: var(--sub); }
+.toggle-track {
+  width: 40px; height: 22px;
+  border-radius: 22px;
+  background: var(--faint);
+  border: 1px solid var(--border);
+  position: relative;
+  transition: background .3s, border-color .3s;
+}
+[data-theme="light"] .toggle-track { background: var(--red); border-color: var(--red); }
+.toggle-thumb {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--dim);
+  transition: transform .25s, background .25s;
+}
+[data-theme="light"] .toggle-thumb { transform: translateX(18px); background: #fff; }
+.shuffle-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .5rem;
+}
+.shuffle-label {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.ring-row { display: flex; align-items: center; gap: .8rem; }
+.ring-svg {
+  width: 42px; height: 42px;
+  transform: rotate(-90deg);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.ring-bg  { fill: none; stroke: var(--border); stroke-width: 3; }
+.ring-arc {
+  fill: none; stroke: var(--red); stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 100.53; stroke-dashoffset: 0;
+  transition: stroke-dashoffset .15s linear;
+}
+.ring-txt {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700;
+  fill: var(--sub);
+  text-anchor: middle; dominant-baseline: central;
+  transform: rotate(90deg) translateX(18px) translateY(-18px);
+}
+.btn-pause {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  padding: .45rem .9rem;
+  cursor: pointer;
+  transition: color .2s, border-color .2s;
+  white-space: nowrap;
+}
+.btn-pause:hover { color: var(--red); border-color: var(--red); }
 
-  .eyebrow {
-    font-size: .6rem;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: .6rem;
-  }
+/* ── QUERY ── */
+.query-section { padding: 2.8rem 3rem 0; }
+.query-section .eyebrow { margin-bottom: 1rem; }
+.query-box {
+  position: relative;
+  width: 100%;
+}
+textarea#query {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--border);
+  color: var(--text);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  line-height: 1.4;
+  padding: .6rem 0 1rem;
+  resize: none;
+  outline: none;
+  transition: border-color .2s, color .25s;
+  display: block;
+  letter-spacing: .01em;
+}
+textarea#query::placeholder { color: var(--dim); font-weight: 600; }
+textarea#query:focus { border-bottom-color: var(--red); }
 
-  h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(2.8rem, 7vw, 6rem);
-    line-height: .95;
-    letter-spacing: .03em;
-  }
-  h1 em { color: var(--red); font-style: normal; }
+/* Clickable placeholder hint */
+.placeholder-hint {
+  margin-top: .6rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--dim);
+  letter-spacing: .05em;
+}
+.placeholder-hint span {
+  color: var(--red);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity .15s;
+}
+.placeholder-hint span:hover { opacity: .7; }
 
-  .tagline {
-    font-size: .82rem;
-    color: var(--muted);
-    line-height: 1.7;
-    max-width: 340px;
-    margin-top: 1rem;
-    font-weight: 300;
-  }
+/* ── GRID ── */
+.grid-section { padding: 2.8rem 3rem; flex: 1; }
+.grid-section .eyebrow { margin-bottom: 1.2rem; }
 
-  /* ── TOP-RIGHT CONTROLS ── */
-  .controls {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 1.2rem;
-    padding-top: .2rem;
-  }
+/*
+  ROW 1: 3 equal columns  (grid-template-columns: repeat(3,1fr))
+  ROW 2: 5 equal columns  (repeat(5,1fr))
+  ROW 3: 5 equal columns  (repeat(5,1fr))
+  We render these as THREE separate sub-grids, not one big grid.
+  This is the only way to guarantee no orphan gaps regardless of card order.
+*/
+.grid-rows { display: flex; flex-direction: column; gap: 1px; }
 
-  /* Theme toggle */
-  .theme-row {
-    display: flex;
-    align-items: center;
-    gap: .65rem;
-    cursor: pointer;
-    user-select: none;
-  }
-  .theme-label {
-    font-size: .6rem;
-    letter-spacing: .15em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .toggle-track {
-    width: 38px; height: 21px;
-    border-radius: 21px;
-    background: var(--faint);
-    border: 1px solid var(--border);
-    position: relative;
-    transition: background .3s, border-color .3s;
-  }
-  [data-theme="light"] .toggle-track { background: var(--red); border-color: var(--red); }
-  .toggle-thumb {
-    position: absolute;
-    top: 2.5px; left: 2.5px;
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: var(--muted);
-    transition: transform .25s, background .25s;
-  }
-  [data-theme="light"] .toggle-thumb { transform: translateX(17px); background: #fff; }
+.grid-row {
+  display: grid;
+  gap: 1px;
+  background: transparent; /* gap colour comes from border on cards */
+}
+.row-3 { grid-template-columns: repeat(3, 1fr); }
+.row-5 { grid-template-columns: repeat(5, 1fr); }
 
-  /* Auto-shuffle ring */
-  .shuffle-block {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: .4rem;
-  }
-  .shuffle-eyebrow {
-    font-size: .55rem;
-    letter-spacing: .15em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .ring-row {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-  }
-  .ring-svg {
-    width: 40px; height: 40px;
-    transform: rotate(-90deg);
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-  .ring-svg title { display: none; }
-  .ring-bg  { fill: none; stroke: var(--border); stroke-width: 3; transition: stroke .3s; }
-  .ring-arc {
-    fill: none;
-    stroke: var(--red);
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-dasharray: 100.53;
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset .15s linear;
-  }
-  .ring-txt {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 10px;
-    fill: var(--muted);
-    text-anchor: middle;
-    dominant-baseline: central;
-    /* undo the -90deg rotation so text is upright */
-    transform: rotate(90deg) translateX(18px) translateY(-18px);
-    transition: fill .3s;
-  }
-  .btn-pause {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: .6rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    padding: .38rem .8rem;
-    cursor: pointer;
-    transition: color .2s, border-color .2s;
-    white-space: nowrap;
-  }
-  .btn-pause:hover { color: var(--red); border-color: var(--red); }
+/* On narrow screens, collapse sensibly */
+@media (max-width: 900px) {
+  .row-3 { grid-template-columns: repeat(3, 1fr); }
+  .row-5 { grid-template-columns: repeat(5, 1fr); }
+}
+@media (max-width: 600px) {
+  .row-3 { grid-template-columns: 1fr; }
+  .row-5 { grid-template-columns: repeat(2, 1fr); }
+}
 
-  /* ── QUERY ── */
-  .query-wrap { padding: 2.5rem 3rem 0; }
-  .query-wrap .eyebrow { margin-bottom: .8rem; }
-  textarea#query {
-    width: 100%;
-    max-width: 820px;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(1.05rem, 2.2vw, 1.45rem);
-    line-height: 1.6;
-    padding: .8rem 0;
-    resize: none;
-    outline: none;
-    transition: border-color .2s, color .3s;
-    display: block;
-  }
-  textarea#query::placeholder { color: var(--faint); }
-  textarea#query:focus { border-bottom-color: var(--red); }
+/* Outer border wrapper */
+.grid-border {
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border); /* gap lines are this colour */
+  transition: background .3s, border-color .3s;
+}
 
-  /* ── GRID ── */
-  .grid-wrap { padding: 2.5rem 3rem; flex: 1; }
-  .grid-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    transition: background .3s, border-color .3s;
-  }
+.card {
+  background: var(--surface);
+  padding: 1.8rem 1.6rem 1.5rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background .15s, var(--tt);
+  user-select: none;
+  animation: cardIn .3s ease both;
+  display: flex;
+  flex-direction: column;
+  min-height: 180px;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 0;
+  background: var(--accent);
+  transition: height .2s ease;
+}
+.card:hover { background: var(--hover-bg); }
+.card:hover::before { height: 100%; }
+.card.no-deeplink:hover::before { background: var(--faint); }
 
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+.card-action {
+  position: absolute;
+  top: 1.1rem; right: 1.1rem;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity .15s;
+}
+.card:hover .card-action { opacity: 1; }
+.card.no-deeplink:hover .card-action { color: var(--dim); }
 
-  .card {
-    background: var(--surface);
-    padding: 1.3rem 1.1rem 1.1rem;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: background .15s, var(--tt);
-    color: inherit;
-    user-select: none;
-    animation: cardIn .3s ease both;
-  }
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 3px; height: 0;
-    background: var(--accent);
-    transition: height .2s;
-  }
-  .card:hover { background: var(--card-hover); }
-  .card:hover::before { height: 100%; }
-  .card.no-deeplink:hover::before { background: var(--faint); }
+.card-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 2rem;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: .3rem;
+  transition: color .15s;
+}
+.card:hover .card-name { color: var(--accent); }
+.card.no-deeplink:hover .card-name { color: var(--sub); }
 
-  .card-action {
-    position: absolute;
-    top: .9rem; right: .9rem;
-    font-size: .57rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    opacity: 0;
-    transition: opacity .15s;
-  }
-  .card:hover .card-action { opacity: 1; }
-  .card.no-deeplink:hover .card-action { color: var(--muted); }
+.card-maker {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: .8rem;
+}
 
-  .card-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.45rem;
-    letter-spacing: .05em;
-    transition: color .15s;
-    margin-bottom: .1rem;
-  }
-  .card:hover .card-name { color: var(--accent); }
-  .card.no-deeplink:hover .card-name { color: var(--muted); }
+.card-tag {
+  display: inline-block;
+  align-self: flex-start;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: .2rem .55rem;
+  margin-bottom: .9rem;
+  opacity: .75;
+  transition: opacity .15s;
+}
+.card.no-deeplink .card-tag { border-color: var(--dim); color: var(--dim); opacity: 1; }
+.card:hover .card-tag { opacity: 1; }
 
-  .card-maker {
-    font-size: .6rem;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: .55rem;
-  }
+.card-note {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--sub);
+  transition: color .15s;
+  flex: 1;
+}
+.card:hover .card-note { color: var(--text); }
 
-  .card-tag {
-    display: inline-block;
-    font-size: .58rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    padding: .15rem .45rem;
-    margin-bottom: .65rem;
-    opacity: .6;
-    transition: opacity .15s;
-  }
-  .card.no-deeplink .card-tag { border-color: var(--faint); color: var(--muted); }
-  .card:hover .card-tag { opacity: 1; }
+.card-hint {
+  margin-top: .7rem;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--dim);
+  transition: color .15s;
+}
+.card:hover .card-hint { color: var(--sub); }
 
-  .card-note {
-    font-size: .73rem;
-    line-height: 1.65;
-    color: var(--note-color);
-    transition: color .15s;
-  }
-  .card:hover .card-note { color: var(--note-hover); }
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 2rem; left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  color: var(--sub);
+  font-family: 'Barlow', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  padding: .8rem 1.6rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s, transform .25s;
+  white-space: nowrap;
+  z-index: 999;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  .card-hint {
-    margin-top: .55rem;
-    font-size: .6rem;
-    color: var(--faint);
-    font-style: italic;
-    transition: color .15s;
-  }
-  .card:hover .card-hint { color: var(--muted); }
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 1.2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--tt);
+}
+.f-count {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.f-brand {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--red);
+}
 
-  /* ── TOAST ── */
-  #toast {
-    position: fixed;
-    bottom: 2rem; left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--red);
-    color: var(--muted);
-    font-size: .75rem;
-    letter-spacing: .06em;
-    padding: .7rem 1.4rem;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .25s, transform .25s;
-    white-space: nowrap;
-    z-index: 999;
-  }
-  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 1.2rem 3rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    transition: var(--tt);
-  }
-  footer .f-count { font-size: .6rem; letter-spacing: .13em; text-transform: uppercase; color: var(--faint); }
-  footer .f-brand { color: var(--red); font-family: 'Bebas Neue', sans-serif; font-size: .9rem; letter-spacing: .1em; }
-
-  @media (max-width: 640px) {
-    header, .query-wrap, .grid-wrap, footer { padding-left: 1.2rem; padding-right: 1.2rem; }
-    h1 { font-size: 3rem; }
-    .controls { align-items: flex-start; }
-  }
+@media (max-width: 700px) {
+  header { flex-direction: column; padding: 1.8rem 1.4rem 1.4rem; }
+  .controls { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+  .query-section, .grid-section, footer { padding-left: 1.4rem; padding-right: 1.4rem; }
+  h1 { font-size: 3.5rem; }
+}
 </style>
 </head>
 <body>
@@ -355,45 +433,48 @@
   <div>
     <p class="eyebrow">AI Intelligence Selector</p>
     <h1>ASK ONCE.<br><em>CHOOSE</em> WHO<br>ANSWERS.</h1>
-    <p class="tagline">Type your question. Click the AI you want to ask. Your query opens directly inside it.</p>
+    <p class="tagline">Type your question. Click an AI. Your query opens inside it — ready to go.</p>
   </div>
-
   <div class="controls">
-
-    <!-- Light / Dark toggle -->
     <div class="theme-row" onclick="toggleTheme()">
       <span class="theme-label" id="theme-label">Dark mode</span>
       <div class="toggle-track"><div class="toggle-thumb"></div></div>
     </div>
-
-    <!-- Auto-shuffle countdown ring -->
     <div class="shuffle-block">
-      <span class="shuffle-eyebrow">Auto-shuffle every 15s</span>
+      <span class="shuffle-label">Auto-shuffle</span>
       <div class="ring-row">
-        <!-- Clicking the ring triggers an immediate shuffle & resets timer -->
         <svg class="ring-svg" viewBox="0 0 36 36" onclick="manualShuffle()" title="Shuffle now">
           <circle class="ring-bg"  cx="18" cy="18" r="16"/>
           <circle class="ring-arc" cx="18" cy="18" r="16" id="ring-arc"/>
-          <text   class="ring-txt" x="18" y="18" id="ring-txt">15</text>
+          <text   class="ring-txt" x="18" y="18" id="ring-txt">30</text>
         </svg>
         <button class="btn-pause" id="pause-btn" onclick="togglePause()">Pause</button>
       </div>
     </div>
-
   </div>
 </header>
 
-<div class="query-wrap">
+<div class="query-section">
   <p class="eyebrow">Your Question</p>
-  <textarea id="query" rows="3"
-    placeholder="What would you like to know?&#10;Type here, then click any AI below…"></textarea>
+  <div class="query-box">
+    <textarea id="query" rows="2"
+      placeholder="What is the one thing you wish you had learned 10 years earlier?"></textarea>
+    <p class="placeholder-hint">
+      Or try this: <span onclick="usePlaceholder()">What is the one thing you wish you had learned 10 years earlier?</span>
+    </p>
+  </div>
 </div>
 
-<div class="grid-wrap">
-  <div class="grid-header">
-    <p class="eyebrow">Choose Your AI</p>
+<div class="grid-section">
+  <p class="eyebrow">Choose Your AI</p>
+  <div class="grid-border" id="grid-border">
+    <!-- Row 1: 3 cards -->
+    <div class="grid-row row-3" id="row1"></div>
+    <!-- Row 2: 5 cards -->
+    <div class="grid-row row-5" id="row2"></div>
+    <!-- Row 3: 5 cards -->
+    <div class="grid-row row-5" id="row3"></div>
   </div>
-  <div class="grid" id="grid"></div>
 </div>
 
 <div id="toast"></div>
@@ -404,191 +485,207 @@
 </footer>
 
 <script>
-/* ── DATA ────────────────────────────────────────────── */
+const PLACEHOLDER = "What is the one thing you wish you had learned 10 years earlier?";
+
 const LLMS = [
   {
     id:"claude", name:"Claude", maker:"Anthropic", tag:"Deep Reasoner",
-    note:"Best for nuanced analysis, long-form writing, and tasks requiring careful judgment.",
-    accent:"#d94f6e",
+    note:"Best for nuanced analysis, long-form writing, and tasks that require careful, layered judgment.",
+    accent:"#E8455A",
     url: q=>`https://claude.ai/new?q=${encodeURIComponent(q)}`,
   },
   {
     id:"chatgpt", name:"ChatGPT", maker:"OpenAI", tag:"The All-Rounder",
-    note:"Reliable and well-rounded. Fluent in code, prose, math, and almost everything else.",
-    accent:"#10a37f",
+    note:"Reliable and versatile. Fluent across code, prose, math, and almost everything in between.",
+    accent:"#19C37D",
     url: q=>`https://chatgpt.com/?q=${encodeURIComponent(q)}`,
   },
   {
     id:"gemini", name:"Gemini", maker:"Google", tag:"The Researcher",
-    note:"Built for deep search and synthesis. Shines at cross-referencing facts and vast knowledge.",
+    note:"Built for deep search and synthesis. Excels at cross-referencing facts across vast knowledge.",
     accent:"#4285F4",
     url: q=>`https://gemini.google.com/app?q=${encodeURIComponent(q)}`,
   },
   {
     id:"perplexity", name:"Perplexity", maker:"Perplexity AI", tag:"The Fact-Checker",
-    note:"Obsessively source-driven. If it's on the internet, Perplexity will find and cite it.",
-    accent:"#a78bfa",
+    note:"Source-obsessed. If it exists on the internet, Perplexity will hunt it down and cite it.",
+    accent:"#B39DFF",
     url: q=>`https://www.perplexity.ai/search?q=${encodeURIComponent(q)}`,
   },
   {
     id:"grok", name:"Grok", maker:"xAI", tag:"The Maverick",
-    note:"Unfiltered and witty. Great for edgy takes, real-time X data, and direct answers.",
-    accent:"#b0b0b0",
+    note:"Unfiltered and quick-witted. Real-time X data, edgy takes, and brutally direct answers.",
+    accent:"#D0D0D0",
     url: q=>`https://x.com/i/grok?text=${encodeURIComponent(q)}`,
   },
   {
     id:"copilot", name:"Copilot", maker:"Microsoft", tag:"The Dev's Companion",
-    note:"Lives inside your workflow. Gold standard for code, refactors, and Office tasks.",
-    accent:"#0078D4",
+    note:"Embedded in your workflow. Gold standard for code, refactors, and Office productivity.",
+    accent:"#2EA3F2",
     url: q=>`https://copilot.microsoft.com/?q=${encodeURIComponent(q)}`,
   },
   {
     id:"mistral", name:"Le Chat", maker:"Mistral AI", tag:"The Efficient One",
-    note:"Punches above its weight. Blazingly fast, surprisingly smart, privacy-conscious.",
-    accent:"#f97316",
+    note:"Blazingly fast, surprisingly capable, and genuinely privacy-conscious.",
+    accent:"#FF8C42",
     url: q=>`https://chat.mistral.ai/chat?q=${encodeURIComponent(q)}`,
   },
   {
     id:"meta", name:"Meta AI", maker:"Meta", tag:"The Social AI",
-    note:"Embedded across Facebook, Instagram, WhatsApp. Meets you where you already are.",
-    accent:"#0668E1",
+    note:"Lives inside Facebook, Instagram, and WhatsApp. Finds you where you already are.",
+    accent:"#1877F2",
     url: q=>`https://www.meta.ai/?q=${encodeURIComponent(q)}`,
   },
   {
     id:"deepseek", name:"DeepSeek", maker:"DeepSeek", tag:"The Dark Horse",
-    note:"Shocked the world with frontier performance at a fraction of the cost. Razor-sharp reasoning.",
-    accent:"#5b8dee",
+    note:"Shocked the world — frontier reasoning at a fraction of the cost. Don't underestimate it.",
+    accent:"#6C9EFF",
     url: q=>`https://chat.deepseek.com/?q=${encodeURIComponent(q)}`,
   },
   {
+    id:"venice", name:"Venice AI", maker:"Venice", tag:"The Private One",
+    note:"No logs, no traces. Runs models that see nothing and remember nothing. Pure privacy.",
+    accent:"#C084FC",
+    url: q=>`https://venice.ai/chat?q=${encodeURIComponent(q)}`,
+  },
+  {
     id:"kimi", name:"Kimi", maker:"Moonshot AI", tag:"Long-Context King",
-    note:"Handles massive documents without flinching. Feed it an entire codebase or legal brief.",
-    accent:"#06b6d4",
+    note:"Handles massive documents without flinching. Feed it a whole codebase or legal brief.",
+    accent:"#22D3EE",
     url:null, hint:"Query copied — paste on kimi.ai", link:"https://kimi.ai",
   },
   {
     id:"qwen", name:"Qwen", maker:"Alibaba", tag:"The Multilingual",
-    note:"Capable across 29 languages. Strong for translation nuance and non-English tasks.",
-    accent:"#ff6900",
+    note:"Fluent across 29 languages. The strongest pick for non-English content and translation.",
+    accent:"#FF7043",
     url:null, hint:"Query copied — paste on qwenlm.ai", link:"https://chat.qwenlm.ai",
   },
   {
     id:"ernie", name:"Ernie", maker:"Baidu", tag:"The Eastern Lens",
-    note:"Deeply trained on Chinese language and culture. Best for Mandarin and Asian markets.",
-    accent:"#e74c3c",
+    note:"Deeply trained on Chinese culture and language. Best for Mandarin and Asian markets.",
+    accent:"#F04040",
     url:null, hint:"Query copied — paste on yiyan.baidu.com", link:"https://yiyan.baidu.com",
   },
 ];
 
-/* ── SHUFFLE & RENDER ───────────────────────────────── */
-function shuffle(arr){
-  const a=[...arr];
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
+/* ── SHUFFLE ── */
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
 }
 
-let order = shuffle(LLMS);
+let order = shuffleArr(LLMS);
 
-function render(){
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
-  order.forEach((llm, i) => {
-    const card = document.createElement('div');
-    card.className = 'card' + (llm.url ? '' : ' no-deeplink');
-    card.style.setProperty('--accent', llm.accent);
-    card.style.animationDelay = `${i * 25}ms`;
-    card.innerHTML = `
-      <span class="card-action">${llm.url ? 'Open →' : 'Copy + Open →'}</span>
-      <div class="card-name">${llm.name}</div>
-      <div class="card-maker">${llm.maker}</div>
-      <span class="card-tag">${llm.tag}</span>
-      <div class="card-note">${llm.note}</div>
-      ${llm.hint ? `<div class="card-hint">* ${llm.hint}</div>` : ''}
-    `;
-    card.addEventListener('click', () => handleClick(llm));
-    grid.appendChild(card);
-  });
-  document.getElementById('f-count').textContent = `${LLMS.length} models available`;
+/* ── BUILD A CARD ── */
+function makeCard(llm, delay) {
+  const card = document.createElement('div');
+  card.className = 'card' + (llm.url ? '' : ' no-deeplink');
+  card.style.setProperty('--accent', llm.accent);
+  card.style.animationDelay = `${delay}ms`;
+  card.innerHTML = `
+    <span class="card-action">${llm.url ? 'Open →' : 'Copy + Open →'}</span>
+    <div class="card-name">${llm.name}</div>
+    <div class="card-maker">${llm.maker}</div>
+    <span class="card-tag">${llm.tag}</span>
+    <div class="card-note">${llm.note}</div>
+    ${llm.hint ? `<div class="card-hint">* ${llm.hint}</div>` : ''}
+  `;
+  card.addEventListener('click', () => handleClick(llm));
+  return card;
 }
 
-function doShuffle(){
-  order = shuffle(LLMS);
-  render();
+/* ── RENDER — strict 3 + 5 + 5 rows ── */
+function render() {
+  const row1 = document.getElementById('row1');
+  const row2 = document.getElementById('row2');
+  const row3 = document.getElementById('row3');
+  row1.innerHTML = '';
+  row2.innerHTML = '';
+  row3.innerHTML = '';
+
+  // Slice the 13 cards into exact rows
+  const slice1 = order.slice(0, 3);   // 3
+  const slice2 = order.slice(3, 8);   // 5
+  const slice3 = order.slice(8, 13);  // 5
+
+  slice1.forEach((llm, i) => row1.appendChild(makeCard(llm, i * 20)));
+  slice2.forEach((llm, i) => row2.appendChild(makeCard(llm, (i + 3) * 20)));
+  slice3.forEach((llm, i) => row3.appendChild(makeCard(llm, (i + 8) * 20)));
+
+  document.getElementById('f-count').textContent = `${LLMS.length} models`;
 }
 
-/* ── AUTO-RESHUFFLE TIMER ───────────────────────────── */
-const TOTAL = 15;          // seconds per cycle
-const CIRC  = 2*Math.PI*16; // ≈100.53 — circumference for r=16
+function doShuffle() { order = shuffleArr(LLMS); render(); }
 
-let elapsed = 0;
-let paused  = false;
-let ticker;
+/* ── PLACEHOLDER CLICK ── */
+function usePlaceholder() {
+  const ta = document.getElementById('query');
+  ta.value = PLACEHOLDER;
+  ta.focus();
+  // Put cursor at end
+  ta.selectionStart = ta.selectionEnd = ta.value.length;
+}
 
-function startTicker(){
-  ticker = setInterval(() => {
+/* ── TIMER ── */
+const TOTAL = 30;
+const CIRC  = 2 * Math.PI * 16;
+let elapsed = 0, paused = false;
+
+function startTicker() {
+  setInterval(() => {
     if (paused) return;
     elapsed++;
     updateRing();
-    if (elapsed >= TOTAL){
-      elapsed = 0;
-      doShuffle();
-    }
+    if (elapsed >= TOTAL) { elapsed = 0; doShuffle(); }
   }, 1000);
 }
-
-function resetTimer(){ elapsed = 0; updateRing(); }
-
-function updateRing(){
-  const frac   = elapsed / TOTAL;
-  const offset = CIRC * (1 - frac);   // full → 0 as time passes
-  document.getElementById('ring-arc').style.strokeDashoffset = offset;
+function resetTimer() { elapsed = 0; updateRing(); }
+function updateRing() {
+  document.getElementById('ring-arc').style.strokeDashoffset =
+    CIRC * (1 - elapsed / TOTAL);
   document.getElementById('ring-txt').textContent =
     paused ? '—' : (TOTAL - elapsed);
 }
-
-function togglePause(){
+function togglePause() {
   paused = !paused;
   document.getElementById('pause-btn').textContent = paused ? 'Resume' : 'Pause';
   updateRing();
 }
+function manualShuffle() { resetTimer(); doShuffle(); }
 
-function manualShuffle(){
-  resetTimer();
-  doShuffle();
-}
-
-/* ── CLICK HANDLER ──────────────────────────────────── */
-function handleClick(llm){
+/* ── CLICK HANDLER ── */
+function handleClick(llm) {
   const q = document.getElementById('query').value.trim();
-  if (!q){
-    showToast('✦ Type your question first');
+  if (!q) {
+    showToast('Type your question first');
     document.getElementById('query').focus();
     return;
   }
-  if (llm.url){
+  if (llm.url) {
     window.open(llm.url(q), '_blank');
   } else {
     navigator.clipboard.writeText(q)
-      .then(()  => showToast(`✓ Copied — paste it into ${llm.name}`))
-      .catch(()  => showToast(`Opening ${llm.name} — paste your query there`));
+      .then(()  => showToast(`Copied — paste into ${llm.name}`))
+      .catch(() => showToast(`Opening ${llm.name} — paste your query there`));
     setTimeout(() => window.open(llm.link, '_blank'), 300);
   }
 }
 
-/* ── THEME ──────────────────────────────────────────── */
-function toggleTheme(){
+/* ── THEME ── */
+function toggleTheme() {
   const html  = document.documentElement;
   const light = html.getAttribute('data-theme') === 'light';
   html.setAttribute('data-theme', light ? 'dark' : 'light');
   document.getElementById('theme-label').textContent = light ? 'Dark mode' : 'Light mode';
 }
 
-/* ── TOAST ──────────────────────────────────────────── */
+/* ── TOAST ── */
 let toastTimer;
-function showToast(msg){
+function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
@@ -596,7 +693,7 @@ function showToast(msg){
   toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-/* ── INIT ───────────────────────────────────────────── */
+/* ── INIT ── */
 render();
 updateRing();
 startTicker();
